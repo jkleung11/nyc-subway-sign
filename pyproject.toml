@@ -2,7 +2,7 @@
 name = "subway-tracker"
 version = "0.1.0"
 description = "subway times for stops"
-authors = ["jkleung11 <jon.leung@lob.com>"]
+authors = ["jkleung11]
 readme = "README.md"
 
 [tool.poetry.dependencies]
