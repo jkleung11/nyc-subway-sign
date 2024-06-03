@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "subway-tracker"
+version = "0.1.0"
+description = "subway times for stops"
+authors = ["jkleung11]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+gtfs-realtime-bindings = "^1.0.0"
+fastapi = "^0.111.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
