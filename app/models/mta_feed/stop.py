@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+
 class Stop(BaseModel):
     """
     represents an individual stop within the system.

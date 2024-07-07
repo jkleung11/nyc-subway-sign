@@ -1,20 +1,24 @@
 from datetime import datetime
+from typing import List, Dict
 
 from fastapi import FastAPI
 
+from app.models.mta_feed.subway_system import SubwaySystem
+from app.models.mta_feed.stop import Stop
+
+subway_system = SubwaySystem(stations_path="subway-stations.csv")
 app = FastAPI()
 
-# @app.
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/time")
-async def time():
-    return {"time": str(datetime.now())}
+@app.get("/routes")
+async def routes():
+    return {"routes": subway_system.system_routes}
 
-@app.get("/times/{stop_id}")
-async def stop_times(stop_id: str):
-    # this should just be a function call
-    return {"stop-id": stop_id}
+@app.get("/routes/stops/{route}")
+async def stops_on_route(route: str):
+    return {"stops": subway_system.stops_on_route(route)}
+

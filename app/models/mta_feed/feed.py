@@ -1,5 +1,4 @@
-import csv
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import requests
 from pydantic import BaseModel
@@ -8,7 +7,7 @@ from google.protobuf.json_format import MessageToDict
 
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
-    
+
 class Feed(BaseModel):
     """
     responsible for making requests to real time updates endpoint
@@ -37,4 +36,3 @@ class Feed(BaseModel):
         """extract feed for stop updates for a stop id"""
         if direction is not direction.lower() not in ("north", "south"):
             raise ValueError("must supply stop id with direction")
-

@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from app.models.mta_feed.stop import Stop
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
+
 class SubwaySystem(BaseModel):
     """parses stations file to create a dict of stop_id: Stop"""
 
@@ -26,7 +27,7 @@ class SubwaySystem(BaseModel):
         with open(self.stations_path, "r") as stations_file:
             reader = csv.DictReader(stations_file)
             for stop_info in reader:
-                stop_id = stop_info['GTFS Stop ID']
+                stop_id = stop_info["GTFS Stop ID"]
                 system_map[stop_id] = self.load_stop(stop_info)
         return system_map
 
@@ -39,11 +40,24 @@ class SubwaySystem(BaseModel):
             "North Direction Label",
             "South Direction Label",
         ]
-        kwargs = {key.lower().replace(' ', "_"): stop_info[key] for key in stop_info_keys}
-        kwargs['routes'] = kwargs.pop('daytime_routes').split(' ')
+        kwargs = {
+            key.lower().replace(" ", "_"): stop_info[key] for key in stop_info_keys
+        }
+        kwargs["routes"] = kwargs.pop("daytime_routes").split(" ")
         return Stop(**kwargs)
-    
-    def stops_on_route(self, route: str) -> List[str]:
+
+    def stops_on_route(self, route: str) -> List[Dict]:
         if route not in self.system_routes:
-            raise ValueError(f'invalid route option, choose one of {self.system_routes}')
-        return [stop.stop_name for stop in self.system_map.values() if route in stop.routes]
+            raise ValueError(
+                f"invalid route option, choose one of {self.system_routes}"
+            )
+        stops_on_route = [
+            {
+                "name": stop.stop_name,
+                "routes": stop.routes,
+                "gtfs-stop-id": stop.gtfs_stop_id,
+            }
+            for stop in self.system_map.values()
+            if route in stop.routes
+        ]
+        return stops_on_route
