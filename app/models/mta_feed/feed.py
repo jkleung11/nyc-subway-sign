@@ -32,7 +32,3 @@ class Feed(BaseModel):
         feed_message.ParseFromString(resp.content)
         return MessageToDict(feed_message)
 
-    def parse_message(message, stop: Stop, direction: str):
-        """extract feed for stop updates for a stop id"""
-        if direction is not direction.lower() not in ("north", "south"):
-            raise ValueError("must supply stop id with direction")
