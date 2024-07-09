@@ -1,25 +1,31 @@
 from typing import List
 
 import requests
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from google.transit import gtfs_realtime_pb2
 from google.protobuf.json_format import MessageToDict
 
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 
-class Feed(BaseModel):
+class FeedParser(BaseModel):
     """
     responsible for making requests to real time updates endpoint
     """
 
-    routes: List[str]
+    route: str
 
+    @field_validator("route")
+    @classmethod
+    def valid_route(cls, route: str):
+        assert route in ROUTE_ENDPOINT_DICT.keys()
+        return route
+        
     @property
-    def endpoint_urls(self) -> List[str]:
-        return ROUTE_ENDPOINT_DICT[self.endpoint_url]
+    def endpoint_url(self) -> str:
+        return ROUTE_ENDPOINT_DICT[self.route]
 
-    def get_message(self) -> dict:
+    def get_feed(self) -> dict:
         """
         request real time data from feed endpoint, returning as json
         """
@@ -31,4 +37,3 @@ class Feed(BaseModel):
         feed_message = gtfs_realtime_pb2.FeedMessage()
         feed_message.ParseFromString(resp.content)
         return MessageToDict(feed_message)
-
