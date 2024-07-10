@@ -3,8 +3,7 @@ from typing import List, Dict
 
 from fastapi import FastAPI
 
-from app.models.mta_feed.subway_system import SubwaySystem
-from app.models.mta_feed.stop import Stop
+from app.service.subway_system import SubwaySystem
 
 subway_system = SubwaySystem(stations_path="subway-stations.csv")
 app = FastAPI()
