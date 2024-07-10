@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
-from app.models.mta.stop import Stop
+from app.models.stop import Stop
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 
