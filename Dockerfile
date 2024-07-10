@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir pipx \
 
 # Ensure Poetry is installed and available in the PATH
 ENV PATH=/root/.local/bin:$PATH
-RUN pipx install poetry==1.2.0
+RUN pipx install poetry==1.7.1
 
 # Set the working directory
 WORKDIR /app
