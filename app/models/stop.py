@@ -10,7 +10,8 @@ class Stop(BaseModel):
     denoting if the stop is the Northbound or Southbound side.
     """
 
-    station_id: int # lower id means uptown, higher is downtown
+    # is gtfs how we know what's in order?
+    station_id: int
     gtfs_stop_id: str
     stop_name: str
     routes: List[str]
