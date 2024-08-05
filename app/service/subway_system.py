@@ -13,18 +13,18 @@ class SubwaySystem(BaseModel):
     parses stations file to represent the subway system
 
     stops_map: dict of stop_id: Stop
-    routes: dict of route_name: Route? 
+    routes: dict of route_name: Route?
     """
 
     stations_path: str
-    routes: Dict[str, List[Route]] = None
+    routes: Dict[str, Route] = None
 
     def model_post_init(self, __context) -> None:
         self.routes = self.load_routes()
 
     def load_routes(self):
         routes = {route_name: [] for route_name in ROUTE_ENDPOINT_DICT.keys()}
-        
+
         with open(self.stations_path, "r") as stations_file:
             reader = csv.DictReader(stations_file)
             for stop_info in reader:
@@ -32,14 +32,18 @@ class SubwaySystem(BaseModel):
                 for route_name in stop.routes:
                     if route_name in ROUTE_ENDPOINT_DICT.keys():
                         routes[route_name].append(stop)
-        
-        return {route_name: Route(name=route_name, stops=stops) for route_name, stops in routes.items()}
-        
+
+        # first character in gtfs stop id signifies route id
+        # subsequent characters increase as train moves south
+        return {
+            route_name: Route(name=route_name, stops=stops)
+            for route_name, stops in routes.items()
+        }
+
     @staticmethod
     def create_stop(stop_info: Dict) -> Stop:
         """return instance of a Stop class"""
         stop_info_keys = [
-            "Station ID",
             "GTFS Stop ID",
             "Stop Name",
             "Daytime Routes",
@@ -51,4 +55,3 @@ class SubwaySystem(BaseModel):
         }
         kwargs["routes"] = kwargs.pop("daytime_routes").split(" ")
         return Stop(**kwargs)
-

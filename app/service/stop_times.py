@@ -6,21 +6,14 @@ from pydantic import BaseModel
 import requests
 
 from app.models.feed import Feed
-from app.models.stop import Stop
+from app.models.arrival import Arrival
 
 
 class StopTimes(BaseModel):
 
-    def parse_arrivals(trip_updates: List[Dict], stop: Stop, direction: str) -> List[Dict]:
-        """parse list of stop time updates for a stop and direction to generate
-        a list of arrivals"""
-        # we need the route id for each trip update
-        arrivals = []
-        stop_id = stop.direction_stop_id(direction)
-
     @staticmethod
-    def get_trip_updates(feed: Feed) -> List[Dict]:
-        """make request to API for feed data and parse for trip updates"""
+    def request_feed(feed: Feed) -> List[Dict]:
+        """make request to API for feed data and return entities"""
         try:
             resp = requests.get(feed.endpoint_url)
             resp.raise_for_status()
@@ -31,22 +24,40 @@ class StopTimes(BaseModel):
 
         feed_message = feed.feed_message()
         feed_message.ParseFromString(resp.content)
-        entities = MessageToDict(feed_message)["entity"]
+        return MessageToDict(feed_message)
 
-        trip_updates = [
-            entity["tripUpdate"] for entity in entities if "tripUpdate" in entity.keys()
-        ]
-        
-        # keep the trip update structure since we need the route
-        return [
-            trip_update
-            for trip_update in trip_updates
-            if "stopTimeUpdate" in trip_update.keys()
-        ]
+    def stop_times(self, feed_message: List[Dict], gtfs_stop_id: str) -> List:
+        arrivals = []
+        for entity in feed_message["entity"]:
+            # only parse if there are stop times
+            if "tripUpdate" not in entity.keys():
+                continue
+            elif "stopTimeUpdate" not in entity["tripUpdate"].keys():
+                continue
+            else:
+                route_id = entity["tripUpdate"]["trip"]["routeId"]
+                stop_time_updates = entity["tripUpdate"]["stopTimeUpdate"]
+                arrivals.extend(
+                    self.parse_stop_time_updates(
+                        stop_time_updates, gtfs_stop_id, route_id
+                    )
+                )
+
+        return arrivals
 
     @staticmethod
-    def mins_to_arrival(timestamp_str: str) -> int:
-        time_to_train = int(timestamp_str) - time.time()
-        in_mins = int(time_to_train / 60)
-        return in_mins
-
+    def parse_stop_time_updates(
+        stop_time_updates: List[Dict], gtfs_stop_id: str, route_id: str
+    ) -> Dict:
+        arrivals = []
+        for stop_time in stop_time_updates:
+            if stop_time["stopId"][:-1] != gtfs_stop_id:
+                continue
+            arrivals.append(
+                {
+                    "route_id": route_id,
+                    "gtfs_stop_id": gtfs_stop_id,
+                    "arrival_ts": stop_time["arrival"]["time"],
+                }
+            )
+        return arrivals

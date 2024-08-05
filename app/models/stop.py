@@ -11,7 +11,6 @@ class Stop(BaseModel):
     """
 
     # is gtfs how we know what's in order?
-    station_id: int
     gtfs_stop_id: str
     stop_name: str
     routes: List[str]

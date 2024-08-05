@@ -14,7 +14,10 @@ class Feed(BaseModel):
     """
 
     endpoint_url: str
-    routes: List[str]
+
+    @property
+    def routes_in_feed(self):
+        return ENDPOINT_ROUTE_DICT[self.endpoint_url]
 
     @field_validator("endpoint_url")
     @classmethod

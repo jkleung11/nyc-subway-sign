@@ -3,13 +3,11 @@ from typing import List, Dict
 
 from fastapi import FastAPI
 
-# from app.models.feed import Feed
-# from app.service.stop_times import FeedParser
+from app.models.stop import Stop
 from app.service.subway_system import SubwaySystem
 
 
 subway_system = SubwaySystem(stations_path="subway-stations.csv")
-# feeds = {}
 
 app = FastAPI()
 
@@ -25,5 +23,6 @@ async def routes():
 
 
 @app.get("/routes/{route}/stops")
-async def stops_on_route(route: str):
-    return {"stops": subway_system.routes[route].stops}
+async def stops_on_route(route: str) -> List[Stop]:
+    return subway_system.routes[route].stops
+
