@@ -10,7 +10,6 @@ class Stop(BaseModel):
     denoting if the stop is the Northbound or Southbound side.
     """
 
-    # is gtfs how we know what's in order?
     gtfs_stop_id: str
     stop_name: str
     routes: List[str]
