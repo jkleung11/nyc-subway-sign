@@ -26,7 +26,7 @@ class StopTimes(BaseModel):
         feed_message.ParseFromString(resp.content)
         return MessageToDict(feed_message)
 
-    def stop_times(self, feed_message: List[Dict], gtfs_stop_id: str) -> List:
+    def arrivals(self, feed_message: List[Dict], gtfs_stop_id: str) -> List:
         arrivals = []
         for entity in feed_message["entity"]:
             # only parse if there are stop times
@@ -51,12 +51,14 @@ class StopTimes(BaseModel):
     ) -> Dict:
         arrivals = []
         for stop_time in stop_time_updates:
-            if stop_time["stopId"][:-1] != gtfs_stop_id:
+            stop_id, direction = stop_time["stopId"][:-1], stop_time["stopId"][-1]
+            if stop_id != gtfs_stop_id:
                 continue
             arrivals.append(
                 {
                     "route_id": route_id,
                     "gtfs_stop_id": gtfs_stop_id,
+                    "direction": direction,
                     "arrival_ts": stop_time["arrival"]["time"],
                 }
             )
