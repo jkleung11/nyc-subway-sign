@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 from fastapi import FastAPI, HTTPException
+import httpx
 
 from app.models.stop import Stop
 from app.models.feed import Feed
@@ -39,5 +40,6 @@ async def stop_info(gtfs_stop_id) -> Stop:
 
 @app.get("/times/{gtfs_stop_id}")
 async def times(gtfs_stop_id: str) -> List:
-    feed_message = stop_times.request_feed(ace_feed)
+    async with httpx.AsyncClient() as client:
+        feed_message = await stop_times.request_feed(ace_feed, client)
     return stop_times.stop_times(feed_message, gtfs_stop_id)
