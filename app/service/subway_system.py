@@ -39,7 +39,7 @@ class SubwaySystem(BaseModel):
 
         # first character in gtfs stop id signifies route id
         # subsequent characters increase as train moves south
-        routes = {route_name: Route(name=route_name, stops=stops) for route_name, stops in routes.items()}
+        routes = {route_name: Route(name=route_name, stops=stops_list) for route_name, stops_list in routes.items()}
         return routes, stops
 
     @staticmethod

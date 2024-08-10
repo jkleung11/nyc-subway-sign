@@ -1,6 +1,7 @@
+from contextlib import asynccontextmanager
 from typing import List, Dict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request, HTTPException
 import httpx
 
 from app.models.stop import Stop
@@ -14,13 +15,20 @@ subway_system = SubwaySystem(stations_path="subway-stations.csv")
 ace_feed = Feed(endpoint_url=ROUTE_ENDPOINT_DICT['A'])
 stop_times = StopTimes()
 
-app = FastAPI()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.client = httpx.AsyncClient()
+    app.subway_system = SubwaySystem(stations_path="subway-stations.csv")
+    app.stop_times = StopTimes()
+    yield
+    await app.client.aclose()
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
-
+    return "hello world"
 
 @app.get("/routes")
 async def routes():
@@ -40,6 +48,8 @@ async def stop_info(gtfs_stop_id) -> Stop:
 
 @app.get("/times/{gtfs_stop_id}")
 async def times(gtfs_stop_id: str) -> List:
-    async with httpx.AsyncClient() as client:
-        feed_message = await stop_times.request_feed(ace_feed, client)
-    return stop_times.stop_times(feed_message, gtfs_stop_id)
+    # how to know what feeds to use based on stop
+    stop = app.subway_system.stops[gtfs_stop_id]
+    # need to know feeds
+    feed_message = await app.stop_times.request_feed(ace_feed, app.client)
+    stop_times = app.stop_times.stop_times(feed_message, gtfs_stop_id)

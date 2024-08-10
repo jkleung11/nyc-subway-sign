@@ -1,6 +1,5 @@
 from typing import List
 
-import requests
 from pydantic import BaseModel, field_validator
 from google.transit import gtfs_realtime_pb2
 
@@ -16,7 +15,7 @@ class Feed(BaseModel):
     endpoint_url: str
 
     @property
-    def routes_in_feed(self):
+    def routes_in_feed(self) -> List[str]:
         return ENDPOINT_ROUTE_DICT[self.endpoint_url]
 
     @field_validator("endpoint_url")
