@@ -56,15 +56,17 @@ class StopTimes():
         self, stop_time_updates: List[Dict], stop: Stop, route_id: str
     ) -> Dict:
         arrivals = {"N": [], "S": []}
+        arrivals = []
         for stop_time in stop_time_updates:
             stop_id, direction_letter = stop_time["stopId"][:-1], stop_time["stopId"][-1]
             if stop_id != stop.gtfs_stop_id:
                 continue
-            arrivals[direction_letter].append(
+            # arrivals[direction_letter].append(
+            arrivals.append(
                 {
                     "route_id": route_id,
                     "gtfs_stop_id": stop.gtfs_stop_id,
-                    "direction_label": stop.direction_label(dir),
+                    "direction_label": stop.direction_label(direction_letter=direction_letter),
                     "arrival_mins": self.mins_to_train(stop_time["arrival"]["time"]),
                     "arrival_time": self.arrival_time(stop_time["arrival"]["time"])
                 }
@@ -80,4 +82,5 @@ class StopTimes():
     
     @staticmethod
     def arrival_time(arrival_timestamp: str) -> str:
+        # need timezone here since we're running in container
         return datetime.fromtimestamp(int(arrival_timestamp)).strftime("%H:%M")
