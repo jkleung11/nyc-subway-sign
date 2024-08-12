@@ -16,12 +16,6 @@ class Stop(BaseModel):
     north_direction_label: Optional[str]
     south_direction_label: Optional[str]
 
-    @property
-    def direction_stop_id(self, direction: str) -> str:
-        if direction.lower() not in ("north", "south"):
-            raise ValueError("direction must be either north or south")
-        direction_stop_ids = {
-            "north": self.gtfs_stop_id + "N",
-            "south": self.gtfs_stop_id + "S",
-        }
-        return direction_stop_ids[direction]
+    def direction_label(self, direction_letter: str) -> str:
+        return {'N': self.north_direction_label,
+                'S': self.south_direction_label}.get(direction_letter)

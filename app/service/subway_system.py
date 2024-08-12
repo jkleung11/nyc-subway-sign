@@ -1,14 +1,13 @@
 import csv
-from typing import Dict, List, Tuple
+from typing import Tuple, Dict
 
-from pydantic import BaseModel
 
 from app.models.stop import Stop
 from app.models.route import Route
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 
-class SubwaySystem(BaseModel):
+class SubwaySystem():
     """
     parses stations file to represent the subway system
 
@@ -17,14 +16,12 @@ class SubwaySystem(BaseModel):
     stops: dict of gtfs_stop_id: Stop
     """
 
-    stations_path: str
-    routes: Dict[str, Route] = None
-    stops: Dict[str, Stop] = None
 
-    def model_post_init(self, __context) -> None:
+    def __init__(self, stations_path: str):
+        self.stations_path = stations_path
         self.routes, self.stops = self.load_metatdata()
 
-    def load_metatdata(self):
+    def load_metatdata(self) -> Tuple[Dict, Dict]:
         routes = {route_name: [] for route_name in ROUTE_ENDPOINT_DICT.keys()}
         stops = {}
 

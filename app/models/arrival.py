@@ -1,4 +1,6 @@
+from typing import Dict, List
 from pydantic import BaseModel
+
 
 class Arrival(BaseModel):
     route_id: str
@@ -6,3 +8,6 @@ class Arrival(BaseModel):
     direction_label: str
     arrival_time: str
     arrival_mins: int
+
+class Arrivals(BaseModel):
+    arrivals: Dict[str, List[Arrival]]
