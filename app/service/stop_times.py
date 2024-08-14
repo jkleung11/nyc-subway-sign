@@ -12,7 +12,7 @@ from app.models.feed import Feed
 
 class StopTimes():
 
-    async def arrivals(self, stop: Stop, feed: Feed, client: httpx.AsyncClient):
+    async def get_arrivals(self, stop: Stop, feed: Feed, client: httpx.AsyncClient):
         feed_message = await self.request_feed(feed=feed, client=client)
         arrivals = self.parse_feed_message(feed_message=feed_message, stop=stop)
         return arrivals
@@ -34,7 +34,7 @@ class StopTimes():
         return MessageToDict(feed_message)
 
     def parse_feed_message(self, feed_message: List[Dict], stop: Stop) -> List:
-        stop_times = []
+        arrivals = []
         for entity in feed_message["entity"]:
             # only parse if there are stop times
             if "tripUpdate" not in entity.keys():
@@ -44,24 +44,21 @@ class StopTimes():
             else:
                 route_id = entity["tripUpdate"]["trip"]["routeId"]
                 stop_time_updates = entity["tripUpdate"]["stopTimeUpdate"]
-                stop_times.extend(
+                arrivals.extend(
                     self.parse_stop_time_updates(
                         stop_time_updates, stop, route_id
                     )
                 )
-
-        return stop_times
+        return arrivals
 
     def parse_stop_time_updates(
         self, stop_time_updates: List[Dict], stop: Stop, route_id: str
     ) -> Dict:
-        arrivals = {"N": [], "S": []}
         arrivals = []
         for stop_time in stop_time_updates:
             stop_id, direction_letter = stop_time["stopId"][:-1], stop_time["stopId"][-1]
             if stop_id != stop.gtfs_stop_id:
                 continue
-            # arrivals[direction_letter].append(
             arrivals.append(
                 {
                     "route_id": route_id,

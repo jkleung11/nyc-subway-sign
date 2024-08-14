@@ -52,6 +52,6 @@ async def times(gtfs_stop_id: str) -> List:
     # how to know what feeds to use based on stop
     stop = app.subway_system.stops[gtfs_stop_id]
     feeds = app.feeds.feeds_for_stop(stop)
-    requests_tasks = [app.stop_times.arrivals(stop=stop, feed=feed, client=app.client) for feed in feeds]
+    requests_tasks = [app.stop_times.get_arrivals(stop=stop, feed=feed, client=app.client) for feed in feeds]
     arrivals = await asyncio.gather(*requests_tasks)
     return arrivals
