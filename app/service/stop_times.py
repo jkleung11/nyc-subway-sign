@@ -6,17 +6,16 @@ from zoneinfo import ZoneInfo
 from google.protobuf.json_format import MessageToDict
 import httpx
 
+from app.models.arrival import Arrival
 from app.models.stop import Stop
 from app.models.feed import Feed
 
 
 class StopTimes():
 
-    async def get_arrivals(self, stop: Stop, feed: Feed, client: httpx.AsyncClient):
+    async def get_arrivals(self, stop: Stop, feed: Feed, client: httpx.AsyncClient) -> List[Arrival]:
         feed_message = await self.request_feed(feed=feed, client=client)
-        arrivals = self.parse_feed_message(feed_message=feed_message, stop=stop)
-        return arrivals
-
+        return self.parse_feed_message(feed_message=feed_message, stop=stop)
 
     @staticmethod
     async def request_feed(feed: Feed, client: httpx.AsyncClient) -> List[Dict]:
@@ -33,7 +32,7 @@ class StopTimes():
         feed_message.ParseFromString(resp.content)
         return MessageToDict(feed_message)
 
-    def parse_feed_message(self, feed_message: List[Dict], stop: Stop) -> List:
+    def parse_feed_message(self, feed_message: List[Dict], stop: Stop) -> List[Arrival]:
         arrivals = []
         for entity in feed_message["entity"]:
             # only parse if there are stop times
@@ -45,30 +44,31 @@ class StopTimes():
                 route_id = entity["tripUpdate"]["trip"]["routeId"]
                 stop_time_updates = entity["tripUpdate"]["stopTimeUpdate"]
                 arrivals.extend(
-                    self.parse_stop_time_updates(
+                    self.parse_arrival(
                         stop_time_updates, stop, route_id
                     )
                 )
         return arrivals
 
-    def parse_stop_time_updates(
+    def parse_arrival(
         self, stop_time_updates: List[Dict], stop: Stop, route_id: str
-    ) -> Dict:
-        arrivals = []
+    ) -> List[Arrival]:
+        parsed = []
         for stop_time in stop_time_updates:
             stop_id, direction_letter = stop_time["stopId"][:-1], stop_time["stopId"][-1]
             if stop_id != stop.gtfs_stop_id:
                 continue
-            arrivals.append(
-                {
+            parsed.append(
+                Arrival(**{
                     "route_id": route_id,
                     "gtfs_stop_id": stop.gtfs_stop_id,
                     "direction_label": stop.direction_label(direction_letter=direction_letter),
+                    "direction_letter": direction_letter,
                     "arrival_mins": self.mins_to_train(stop_time["arrival"]["time"]),
                     "arrival_time": self.arrival_time(stop_time["arrival"]["time"])
-                }
+                })
             )
-        return arrivals
+        return parsed
     
     @staticmethod
     def mins_to_train(timestamp_str: str) -> int:
