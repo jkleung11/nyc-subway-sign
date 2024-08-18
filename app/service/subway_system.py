@@ -1,29 +1,29 @@
 import csv
-from typing import Dict, List, Tuple
+from typing import Tuple, Dict
 
-from pydantic import BaseModel
 
 from app.models.stop import Stop
 from app.models.route import Route
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 
-class SubwaySystem(BaseModel):
+class SubwaySystem():
     """
     parses stations file to represent the subway system
 
-    stops_map: dict of stop_id: Stop
-    routes: dict of route_name: Route?
+    stations_path: filepath to read on start up
+    routes: dict of route_id: Route
+    stops: dict of gtfs_stop_id: Stop
     """
 
-    stations_path: str
-    routes: Dict[str, Route] = None
 
-    def model_post_init(self, __context) -> None:
-        self.routes = self.load_routes()
+    def __init__(self, stations_path: str):
+        self.stations_path = stations_path
+        self.routes, self.stops = self.load_metatdata()
 
-    def load_routes(self):
+    def load_metatdata(self) -> Tuple[Dict, Dict]:
         routes = {route_name: [] for route_name in ROUTE_ENDPOINT_DICT.keys()}
+        stops = {}
 
         with open(self.stations_path, "r") as stations_file:
             reader = csv.DictReader(stations_file)
@@ -32,13 +32,12 @@ class SubwaySystem(BaseModel):
                 for route_name in stop.routes:
                     if route_name in ROUTE_ENDPOINT_DICT.keys():
                         routes[route_name].append(stop)
+                stops[stop.gtfs_stop_id] = stop
 
         # first character in gtfs stop id signifies route id
         # subsequent characters increase as train moves south
-        return {
-            route_name: Route(name=route_name, stops=stops)
-            for route_name, stops in routes.items()
-        }
+        routes = {route_name: Route(name=route_name, stops=stops_list) for route_name, stops_list in routes.items()}
+        return routes, stops
 
     @staticmethod
     def create_stop(stop_info: Dict) -> Stop:
