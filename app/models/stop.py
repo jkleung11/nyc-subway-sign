@@ -17,5 +17,6 @@ class Stop(BaseModel):
     south_direction_label: Optional[str]
 
     def direction_label(self, direction_letter: str) -> str:
-        return {'N': self.north_direction_label,
-                'S': self.south_direction_label}.get(direction_letter)
+        return {"N": self.north_direction_label, "S": self.south_direction_label}.get(
+            direction_letter
+        )

@@ -57,18 +57,6 @@ async def times(times_request: TimesRequest) -> Dict[str, List[Arrival]]:
         app.stop_times.get_arrivals(stop=stop, feed=feed, client=app.client)
         for feed in feeds
     ]
-    
+
     responses = await asyncio.gather(*requests_tasks)
-
-    times_dict = {"N": [], "S": []}
-
-    for arrivals in responses:
-        for arrival in arrivals:
-            if times_request.min_mins <= arrival.arrival_mins <= times_request.max_mins:
-                times_dict[arrival.direction_letter].append(arrival)
-
-    times_dict = {
-        direction: sorted(arrivals, key=lambda arrival: arrival.arrival_mins)
-        for direction, arrivals in times_dict.items()
-    }
-    return times_dict
+    return app.stop_times.filter_arrivals(responses, times_request)

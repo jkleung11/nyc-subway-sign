@@ -6,7 +6,7 @@ from app.models import Route, Stop
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 
-class SubwaySystem():
+class SubwaySystem:
     """
     parses stations file to represent the subway system
 
@@ -14,7 +14,6 @@ class SubwaySystem():
     routes: dict of route_id: Route
     stops: dict of gtfs_stop_id: Stop
     """
-
 
     def __init__(self, stations_path: str):
         self.stations_path = stations_path
@@ -35,7 +34,10 @@ class SubwaySystem():
 
         # first character in gtfs stop id signifies route id
         # subsequent characters increase as train moves south
-        routes = {route_name: Route(name=route_name, stops=stops_list) for route_name, stops_list in routes.items()}
+        routes = {
+            route_name: Route(name=route_name, stops=stops_list)
+            for route_name, stops_list in routes.items()
+        }
         return routes, stops
 
     @staticmethod
