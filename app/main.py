@@ -28,21 +28,21 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
-async def root():
+def root():
     return "hello world"
 
 @app.get("/routes")
-async def routes():
+def routes():
     return {"routes": app.subway_system.system_routes}
 
-@app.get("/routes/{route}")
-async def stops_on_route(route_id: str) -> List[Stop]:
+@app.get("/routes/{route_id}")
+def stops_on_route(route_id: str) -> List[Stop]:
     if route_id not in app.subway_system.routes.keys():
         raise HTTPException(status_code=404, detail=f"route_id: {route_id} not found")
     return app.subway_system.routes[route_id].stops
 
 @app.get("/stops/{gtfs_stop_id}")
-async def stop_info(gtfs_stop_id) -> Stop:
+def stop_info(gtfs_stop_id) -> Stop:
     if gtfs_stop_id not in app.subway_system.stops.keys():
         raise HTTPException(status_code=404, detail=f"gtfs_stop_id: {gtfs_stop_id} not found")
     return app.subway_system.stops[gtfs_stop_id]

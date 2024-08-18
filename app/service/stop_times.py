@@ -1,11 +1,11 @@
 from datetime import datetime
 import time
 from typing import Dict, List
+from zoneinfo import ZoneInfo
 
 from google.protobuf.json_format import MessageToDict
 import httpx
 
-from app.models.arrival import Arrivals
 from app.models.stop import Stop
 from app.models.feed import Feed
 
@@ -80,4 +80,5 @@ class StopTimes():
     @staticmethod
     def arrival_time(arrival_timestamp: str) -> str:
         # need timezone here since we're running in container
-        return datetime.fromtimestamp(int(arrival_timestamp)).strftime("%H:%M")
+        dt = datetime.fromtimestamp(int(arrival_timestamp))
+        return dt.astimezone(ZoneInfo("US/Eastern")).strftime("%-I:%M %p")
