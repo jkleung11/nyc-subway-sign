@@ -1,8 +1,6 @@
 from typing import List, Dict
 
-from metadata.constants import ENDPOINT_ROUTE_DICT
-from app.models.feed import Feed
-from app.models.stop import Stop
+from app.models import Feed, Stop 
 
 
 class Feeds():

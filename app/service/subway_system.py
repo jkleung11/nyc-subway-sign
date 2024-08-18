@@ -2,8 +2,7 @@ import csv
 from typing import Tuple, Dict
 
 
-from app.models.stop import Stop
-from app.models.route import Route
+from app.models import Route, Stop
 from metadata.constants import ROUTE_ENDPOINT_DICT
 
 

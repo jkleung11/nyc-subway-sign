@@ -6,9 +6,8 @@ from zoneinfo import ZoneInfo
 from google.protobuf.json_format import MessageToDict
 import httpx
 
-from app.models.arrival import Arrival
-from app.models.stop import Stop
-from app.models.feed import Feed
+from app.models import Arrival, Feed, Stop
+
 
 
 class StopTimes():
