@@ -17,7 +17,7 @@ class Feed(BaseModel):
     @property
     def routes(self) -> List[str]:
         return ENDPOINT_ROUTE_DICT[self.endpoint_url]
-    
+
     def has_routes(self, routes_list: List[str]) -> bool:
         "checks if the feed provides information on any of the routes in routes_list"
         return any(route in self.routes for route in routes_list)
