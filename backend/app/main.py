@@ -27,10 +27,14 @@ app = FastAPI(lifespan=lifespan)
 def root():
     return "hello world"
 
+@app.get("/health")
+def health():
+    return "app is healthy"
+
 
 @app.get("/routes")
 def routes():
-    return {"routes": app.subway_system.system_routes}
+    return {"routes": app.subway_system.routes}
 
 
 @app.get("/routes/{route_id}")
