@@ -2,20 +2,17 @@ import { LedMatrixInstance, FontInstance } from "rpi-led-matrix";
 import { getTrainColor } from "./colors";
 
 // Function to display a message on the LED matrix
-export function displayMessage(matrix: LedMatrixInstance, message: string, 
-  x: number, y: number, color: number=0x00FF00): void {
+export function displayMessage(matrix: LedMatrixInstance, 
+  x: number, y: number, message: string, color: number=0x00FF00): void {
   matrix.fgColor(color);
   matrix.drawText(message, x, y);
-
-  // Render the display
-  matrix.sync();
 }
 
-export function displayStationName(matrix: LedMatrixInstance, font: FontInstance, 
-  stationName: string, y: number=26): void {
-  const nameWidth = font.stringWidth(stationName);
+export function displayStopName(matrix: LedMatrixInstance, font: FontInstance, 
+  stopName: string, y: number=26): void {
+  const nameWidth = font.stringWidth(stopName);
   const centered = Math.floor((matrix.width() - nameWidth)/2);
-  displayMessage(matrix, stationName, centered, y);
+  displayMessage(matrix, centered, y, stopName);
 }
 
 export function drawTrainLogo(matrix: LedMatrixInstance, x: number, y: number,
@@ -34,5 +31,4 @@ export function drawTrainLogo(matrix: LedMatrixInstance, x: number, y: number,
     matrix.drawLine(x+2, y+8, x+width+0, y+8);
     matrix.fgColor(0x00000);
     matrix.drawText(train, x+2, y+3);
-
 }

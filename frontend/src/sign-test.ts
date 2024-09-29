@@ -1,18 +1,18 @@
 
-import { drawTrainLogo, displayMessage, displayStationName } from './utils';
+import { drawTrainLogo, displayMessage, displayStopName } from './utils';
 import { font, matrix } from './matrix';
 
 // Function to loop through the list of messages
 async function drawDisplay() {
   
   drawTrainLogo(matrix, 1, 2, 4, 'A');
-  displayMessage(matrix, 'Manhattan', 9, 5);
-  displayMessage(matrix, '20min', 46, 5);
+  displayMessage(matrix, 9, 5, 'Manhattan');
+  displayMessage(matrix, 46, 5, '20 min');
   
   drawTrainLogo(matrix, 1, 14, 4, '1');
-  displayMessage(matrix, 'Uptown', 9, 17);
-  displayMessage(matrix, '10min', 46, 17);
-  displayStationName(matrix, font, '125th St')
+  displayMessage(matrix, 9, 17, 'Uptown');
+  displayMessage(matrix, 46, 17, '10 min');
+  displayStopName(matrix, font, '125th St')
   matrix.sync();
   }
 
