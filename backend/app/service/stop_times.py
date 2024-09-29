@@ -12,7 +12,7 @@ from app.models import Arrival, Feed, Stop, TimesRequest
 class StopTimes:
     """
     class responsible for:
-    - making request to MTA feed
+    - making request to MTA feeds
     - parsing times in response into Arrival
     - sorting and filtering Arrivals based on request
     """
@@ -83,7 +83,7 @@ class StopTimes:
 
     @staticmethod
     def filter_arrivals(responses: List[List[Arrival]], times_request: TimesRequest):
-        filtered = {"N": [], "S": []}
+        filtered = []
         for arrivals in responses:
             for arrival in arrivals:
                 if (
@@ -91,13 +91,8 @@ class StopTimes:
                     <= arrival.arrival_mins
                     <= times_request.max_mins
                 ):
-                    filtered[arrival.direction_letter].append(arrival)
-
-        sorted_filtered = {
-            direction: sorted(arrivals, key=lambda arrival: arrival.arrival_mins)
-            for direction, arrivals in filtered.items()
-        }
-        return sorted_filtered
+                    filtered.append(arrival)
+        return sorted(filtered, key=lambda arrival: arrival.arrival_mins)
 
     @staticmethod
     def mins_to_train(timestamp_str: str) -> int:

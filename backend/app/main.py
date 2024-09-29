@@ -54,7 +54,7 @@ def stop_info(gtfs_stop_id) -> Stop:
 
 
 @app.post("/times")
-async def times(times_request: TimesRequest) -> Dict[str, List[Arrival]]:
+async def times(times_request: TimesRequest) -> List[Arrival]:
     stop = app.subway_system.stops[times_request.gtfs_stop_id]
     feeds = app.feeds.feeds_for_stop(stop)
     requests_tasks = [
