@@ -1,97 +1,53 @@
 import axios, { AxiosResponse } from 'axios';
-import { LedMatrix, GpioMapping, LedMatrixInstance, Font } from 'rpi-led-matrix';
+import { displayMessage, drawTrainLogo } from './utils';
+import { matrix } from './matrix';
 
 // Backend API URL (make sure it points to the correct backend URL)
-const backendUrl = process.env.SUBWAY_API_URL || 'http://backend:8000';
+const backendUrl = process.env.SUBWAY_API_URL || 'http://localhost:8000';
 
-// LED Matrix setup (adjust according to your specific LED matrix setup)
-const matrix = new LedMatrix(
-  {
-    ...LedMatrix.defaultMatrixOptions(),
-    rows: 32,
-    cols: 64,
-    chainLength: 1,
-    hardwareMapping: GpioMapping.AdafruitHat,
-  }, {
-    ...LedMatrix.defaultRuntimeOptions(),
-    gpioSlowdown: 3,
-    
-  });
-
-
-// Optional: Load a font for the matrix (this requires a TTF font file to be available on your system)
-const fontPath = 'fonts/helvR12.bdf';
-const font = new Font('helvR12', fontPath);
-
-// Load the font (if using one)
-matrix.font(font);
+interface Arrival {
+  route_id: string
+}
+interface BackendResponse {
+  arrivals: Arrival[]
+}
 
 // Function to fetch data from the backend and print the status code to the LED matrix
-async function fetchDataAndDisplay(): Promise<void> {
+async function fetchArrivals (): Promise<BackendResponse> {
   try {
     // Make a POST request to the backend
-    const response: AxiosResponse = await axios.post(`${backendUrl}/times/`, {
+    const response = await axios.post(`${backendUrl}/times`, {
       gtfs_stop_id: 'A24',
       min_mins: 5,
       max_mins: 15
     });
-
-    // Print the HTTP status code on the LED matrix
-    const statusCode = response.status;
-    console.log(`Received status code: ${statusCode}`);
-
-    // Display the status code on the LED matrix
-    displayStatusCode(statusCode);
+    return response.data;
   } catch (error) {
-    // Check if the error is an AxiosError and if it has a response
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // Server responded with a status code other than 2xx
-        const statusCode = error.response.status;
-        console.error('Error response from backend:', statusCode);
-        displayStatusCode(statusCode);
-      } else {
-        // Network error or no response received
-        console.error('Network error or no response from backend:', error.message);
-        displayStatusCode('ERR'); // Display "ERR" for network errors
-      }
-    } else {
-      // Some other error occurred
-      console.error('Unexpected error:', error);
-      displayStatusCode('ERR');
-    }
+      console.error(`Issue getting times from backend`);
+      throw new Error(`${error}`);
   }
 }
 
 
-// Function to display a status code on the LED matrix
-function displayStatusCode(statusCode: number | string): void {
-  // Clear the matrix before displaying new content
-  matrix.clear();
 
-  // Set color (red for errors, green for success, yellow for other codes)
-  if (statusCode === 200 || statusCode === 307) {
-    matrix.fgColor(0x00FF00); // Green for success (status code 200)
-  } else if (typeof statusCode === 'number' && statusCode >= 400) {
-    matrix.fgColor(0xFF0000); // Red for errors (status codes 4xx and 5xx)
-  } else {
-    matrix.fgColor(0xFFFF00); // Yellow for other codes
-  }
 
-  // Display the status code in the center of the LED matrix
-  matrix.drawText(`Status: ${statusCode}`, 5, 10);
-
-  // Render the display
-  matrix.sync();
-}
 
 // Main function to start the process
 async function main() {
   // Fetch data and display the status code on the LED matrix
-  await fetchDataAndDisplay();
+  const timesData = await fetchArrivals();
+  if (timesData.arrivals.length > 1) {
+    const train1 = timesData.arrivals[0].route_id;
+    const train2 = timesData.arrivals[1].route_id;
+    matrix.clear();
+    drawTrainLogo(matrix, 1, 2, 4, train1);
+    drawTrainLogo(matrix, 1, 14, 4, train2);
+    matrix.sync();
+  }
+  console.log(timesData.arrivals);
 
-  // Optional: If you want to periodically update the matrix, you can use setInterval
-  setInterval(fetchDataAndDisplay, 60000); // e.g., fetch and display every 60 seconds
+
+  setInterval(fetchArrivals, 10000); //
 }
 
 main();
