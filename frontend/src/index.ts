@@ -60,18 +60,18 @@ async function fetchAndDisplay() {
         displayStopName(matrix, font, timesData.stop_name);
   
         matrix.sync();
-        await setTimeout(3000);
+        await setTimeout(7000);
 
       }
       console.log(timesData.arrivals);
     } else if (timesData === null) {
-      matrix.clear();
-      console.log("received null from backend");
-      displayMessage(matrix, 0, 0, "empty data");
-      matrix.sync();
+        matrix.clear();
+        console.log("received null from backend");
+        displayMessage(matrix, 0, 0, "empty data");
+        matrix.sync();
     } else {
-      displayMessage(matrix, 0, 0, "error with api");
-      matrix.sync();
+        displayMessage(matrix, 0, 0, "error with api");
+        matrix.sync();
     }
   } catch(error) {
       if (intervalId !== undefined) {
@@ -82,9 +82,8 @@ async function fetchAndDisplay() {
 }
 
 async function main() {
-  fetchAndDisplay();
-  intervalId = setInterval(fetchAndDisplay, 60000);
-
+  await fetchAndDisplay();
+  main();
 }
 
 main();
