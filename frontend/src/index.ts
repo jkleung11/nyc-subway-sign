@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { setTimeout } from 'timers/promises';
 import { displayMessage, drawTrainLogo, displayStopName } from './utils';
 import { matrix, font } from './matrix';
 
@@ -41,21 +42,27 @@ async function fetchAndDisplay() {
   try {
     const timesData = await fetchArrivals();
     if (timesData && timesData.arrivals.length > 1) {
-      const train1 = timesData.arrivals[0];
-      const train2 = timesData.arrivals[1];
-      matrix.clear();
-      // draw first response
-      drawTrainLogo(matrix, 1, 2, 4, train1.route_id);
-      displayMessage(matrix, 9, 5, train1.direction_label);
-      displayMessage(matrix, 46, 5, train1.arrival_mins.toString() + 'min');
+      for (let i = 0; i < timesData.arrivals.length; i+=2) {
+        const train1 = timesData.arrivals[i];
+        const train2 = timesData.arrivals[i+1] !== undefined ? timesData.arrivals[i+1] : null;
+        matrix.clear();
+        // draw first response
+        drawTrainLogo(matrix, 1, 2, 4, train1.route_id);
+        displayMessage(matrix, 9, 5, train1.direction_label);
+        displayMessage(matrix, 46, 5, train1.arrival_mins.toString() + 'min');
+        
+        if (train2 !== null) {
+          drawTrainLogo(matrix, 1, 14, 4, train2.route_id);
+          displayMessage(matrix, 9, 17, train2.direction_label);
+          displayMessage(matrix, 46, 17, train2.arrival_mins.toString() + 'min');
+        }
+        
+        displayStopName(matrix, font, timesData.stop_name);
+  
+        matrix.sync();
+        await setTimeout(3000);
 
-      drawTrainLogo(matrix, 1, 14, 4, train2.route_id);
-      displayMessage(matrix, 9, 17, train2.direction_label);
-      displayMessage(matrix, 46, 17, train2.arrival_mins.toString() + 'min');
-
-      displayStopName(matrix, font, timesData.stop_name);
-
-      matrix.sync();
+      }
       console.log(timesData.arrivals);
     } else if (timesData === null) {
       matrix.clear();
