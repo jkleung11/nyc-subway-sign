@@ -1,5 +1,10 @@
 # directories
 __pycache__
+node_modules
+frontend/dist/
+
+# python stuff
+.DS_Store
 
 # scratch files
 scratch.py

@@ -18,14 +18,11 @@ RUN pipx install poetry==1.7.1
 # Set the working directory
 WORKDIR /app
 
-# Copy only pyproject.toml and poetry.lock to leverage Docker cache
 COPY pyproject.toml poetry.lock* /app/
 
 # Install dependencies using Poetry
 RUN poetry install --no-root
 
-# Copy the rest of the application code
 COPY . /app
 
-# Set the entry point to use the virtual environment's Python interpreter
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
