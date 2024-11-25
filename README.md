@@ -1,6 +1,8 @@
 # nyc-subway-sign
 Display subway arrivals times on an LED Matrix via Raspberry Pi. Now if only the trains can run on time...
 
+![](demo.gif)
+
 ## Overview
 The MTA provides public [real time feeds](https://api.mta.info/#/subwayRealTimeFeeds) for each of its subway lines. This project uses:
 - a FastAPI backend to send requests and parse responses from the real time feeds 
