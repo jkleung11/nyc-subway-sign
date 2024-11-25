@@ -1,14 +1,18 @@
 import axios from 'axios';
 import { setTimeout } from 'timers/promises';
-import { displayMessage, drawTrainLogo, displayStopName } from './utils';
+import { displayMessage, drawTrainLogo, displayStopName, processStopLabel } from './utils';
 import { matrix, font } from './matrix';
 
 // Backend API URL (make sure it points to the correct backend URL)
 const backendUrl = process.env.SUBWAY_API_URL || 'http://localhost:8000';
+const gtfsStopId = process.env.GTFS_STOP_ID;
+const minMins = process.env.MIN_MINS;
+const maxMins = process.env.MAX_MINS;
 
 interface Arrival {
   route_id: string;
   direction_label: string;
+  direction_letter: string;
   arrival_mins: number;
 }
 
@@ -22,9 +26,9 @@ async function fetchArrivals (): Promise<BackendResponse | null> {
   try {
     // Make a POST request to the backend
     const response = await axios.post(`${backendUrl}/times`, {
-      gtfs_stop_id: 'A45',
-      min_mins: 5,
-      max_mins: 25
+      gtfs_stop_id: gtfsStopId,
+      min_mins: minMins,
+      max_mins: maxMins
     });
     console.log(response.status);
     return response.data;
@@ -48,12 +52,12 @@ async function fetchAndDisplay() {
         matrix.clear();
         // draw first response
         drawTrainLogo(matrix, 1, 2, 4, train1.route_id);
-        displayMessage(matrix, 9, 5, train1.direction_label);
+        displayMessage(matrix, 9, 5, processStopLabel(train1.direction_label, train1.direction_letter));
         displayMessage(matrix, 46, 5, train1.arrival_mins.toString() + 'min');
         
         if (train2 !== null) {
           drawTrainLogo(matrix, 1, 14, 4, train2.route_id);
-          displayMessage(matrix, 9, 17, train2.direction_label);
+          displayMessage(matrix, 9, 17, processStopLabel(train2.direction_label, train2.direction_letter));
           displayMessage(matrix, 46, 17, train2.arrival_mins.toString() + 'min');
         }
         
@@ -67,7 +71,7 @@ async function fetchAndDisplay() {
     } else if (timesData === null) {
         matrix.clear();
         console.log("received null from backend");
-        displayMessage(matrix, 0, 0, "empty data");
+        displayMessage(matrix, 0, 0, "empty data from API");
         matrix.sync();
     } else {
         displayMessage(matrix, 0, 0, "error with api");

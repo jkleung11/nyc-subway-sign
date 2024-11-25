@@ -8,6 +8,21 @@ export function displayMessage(matrix: LedMatrixInstance,
   matrix.drawText(message, x, y);
 }
 
+export function processStopLabel(stopLabel: string, directionLetter: string): string {
+  // sometimes a stop label is too long for our display
+  // if we're too long, default to Uptown / Downtown 
+  if (stopLabel.length > 11) {
+    if (directionLetter === "N") {
+      return "Uptown";
+    } else if (directionLetter === "S") {
+      return "Downtown";
+    } else {
+      throw new Error("Invalid direction letter");
+    }
+  }
+  return stopLabel;
+}
+
 export function displayStopName(matrix: LedMatrixInstance, font: FontInstance, 
   stopName: string, y: number=26): void {
   const nameWidth = font.stringWidth(stopName);

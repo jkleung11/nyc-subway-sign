@@ -3,7 +3,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "lib": ["ES2015"]
+        "lib": ["ES2015", "DOM"]
     },
     "include": ["src/**/*"],
     "watchOptions": {
