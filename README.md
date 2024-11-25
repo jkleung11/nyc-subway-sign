@@ -2,13 +2,9 @@
 Display subway arrivals times on an LED Matrix via Raspberry Pi. Now if only the trains can run on time...
 
 ## Overview
-
-### Installation
-
-### Backend
-
-### Frontend
-
+The MTA provides public [real time feeds](https://api.mta.info/#/subwayRealTimeFeeds) for each of its subway lines. This project uses:
+- a FastAPI backend to send requests and parse responses from the real time feeds 
+- a TypeScript frontend to display responses (train times, line names, etc.) on a LED Matrix via the [rpi-led-matrix](https://www.npmjs.com/package/rpi-led-matrix) package
 
 ## Materials
 Below is a list of materials and where to find them. 
@@ -49,7 +45,7 @@ Both the frontend and backend of the sign run on Docker containers. The `docker-
 - Minimum time to arrival in minutes via `MIN_MINS`
 - Maximum time to arrival in minutes via `MAX_MINS`
 
-After setting these to your preferences, build and run the containers on your Raspberry Pi. After the backend application is healthy, the frontend begins making requests to fetch times from the MTA API.
+After setting these to your preferences, build and run the containers on your Raspberry Pi. After the backend application is healthy, the frontend begins making requests to fetch times from the MTA API. Check the `subway-stations.csv` file to find your station's `GTFS_STOP_ID`.
 
 *A note: You may need to use `sudo` before calling `docker`*
 
