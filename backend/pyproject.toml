@@ -12,6 +12,9 @@ gtfs-realtime-bindings = "^1.0.0"
 fastapi = "^0.111.0"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
