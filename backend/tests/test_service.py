@@ -1,6 +1,9 @@
 import pytest
-from unittest.mock import MagicMock, mock_open, patch
-from app.service import Feeds, SubwaySystem
+from unittest.mock import AsyncMock, MagicMock, mock_open, patch
+
+import httpx
+
+from app.service import Feeds, StopTimes, SubwaySystem
 from app.models import Stop, Route, Feed
 
 def test_load_metadata():
@@ -55,3 +58,42 @@ def test_feeds():
     assert isinstance(feeds.feeds[0], Feed)
     assert feeds.feeds[0].endpoint_url == 'test-url-ACE'
     assert feeds.feeds[0].routes == ["A", "C", "E"]
+
+
+@pytest.mark.asyncio
+@patch("app.service.stop_times.MessageToDict")
+async def test_request_feed_success(mock_message_to_dict):
+    # Mock httpx.AsyncClient.get
+    mock_client = AsyncMock()
+    mock_response = AsyncMock(status_code=200, content=b"mocked protobuf data")
+    mock_client.get.return_value = mock_response
+
+    # Mock feed and its feed_message method
+    mock_feed = MagicMock(endpoint_url="https://mocked-feed-url.com")
+    mock_feed_message = MagicMock()
+    mock_feed.feed_message.return_value = mock_feed_message
+    mock_feed_message.ParseFromString = MagicMock()
+
+    # Mock MessageToDict to return a parsed protobuf message
+    mock_message_to_dict.return_value = {"entity": []}
+
+    # Call the method
+    stop_times = StopTimes()
+    result = await stop_times.request_feed(feed=mock_feed, client=mock_client)
+
+    # Assertions
+    mock_client.get.assert_awaited_once_with("https://mocked-feed-url.com")
+    mock_feed_message.ParseFromString.assert_called_once_with(b"mocked protobuf data")
+    assert result == {"entity": []}
+
+
+@pytest.mark.asyncio
+async def test_request_feed_error():
+    mock_client = AsyncMock()
+    mock_client.get.side_effect = httpx.HTTPError("Error")
+
+    mock_feed = MagicMock(endpoint_url="https://mocked-feed-url.com")
+    stop_times = StopTimes()
+
+    with pytest.raises(Exception, match="error retrieving data from endpoint"):
+        await stop_times.request_feed(feed=mock_feed, client=mock_client)
