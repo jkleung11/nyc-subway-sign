@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from app.models import Arrival, TimesRequest
+from app.models import Arrival, TimesRequest, Stop
 from app.service import StopTimes
 
 @pytest.mark.asyncio
@@ -50,7 +50,6 @@ def test_parse_feed_message(mock_parse_arrival):
     mock_parse_arrival.assert_called_once_with(mock_stop_time_updates, mock_stop, "A")
 
 
-
 @pytest.mark.asyncio
 @patch("app.service.stop_times.MessageToDict")
 async def test_request_feed_success(mock_message_to_dict):
@@ -88,6 +87,32 @@ async def test_request_feed_error():
 
     with pytest.raises(Exception, match="error retrieving data from endpoint"):
         await stop_times.request_feed(feed=mock_feed, client=mock_client)
+
+def test_parse_arrival():
+    stop_times = StopTimes()
+    stop = Stop(gtfs_stop_id="A15", stop_name="Test Stop", routes=["A", "C", "E"], 
+                north_direction_label="Uptown Label", south_direction_label="Downtown Label")
+    stop_time_updates = [
+        {
+            "stopId": "E2N",
+            "arrival": {
+                "time": str(int(time.time() + 300))
+            }
+        }, 
+        {
+            "stopId": "A15N",
+            "arrival": {
+                "time": str(int(time.time() + 600))
+            }
+        }
+    ]
+    parsed_arrivals = stop_times.parse_arrival(stop_time_updates, stop, "A15N")
+    assert isinstance(parsed_arrivals, list)
+    assert len(parsed_arrivals) == 1
+    assert isinstance(parsed_arrivals[0], Arrival)
+    assert 9 <= parsed_arrivals[0].arrival_mins <= 10
+    assert parsed_arrivals[0].direction_label == "Uptown Label"
+    assert parsed_arrivals[0].direction_letter == "N"
 
 def test_filter_arrivals():
     first = {
