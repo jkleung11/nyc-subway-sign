@@ -8,6 +8,50 @@ from app.models import Arrival, TimesRequest
 from app.service import StopTimes
 
 @pytest.mark.asyncio
+@patch("app.service.stop_times.StopTimes.request_feed", new_callable=AsyncMock)
+@patch("app.service.stop_times.StopTimes.parse_feed_message")
+async def test_get_arrivals(mock_parse, mock_request):
+    mock_stop = MagicMock()
+    mock_feed = MagicMock()
+    mock_client= MagicMock()
+    stop_times = StopTimes()
+
+    await stop_times.get_arrivals(mock_stop, mock_feed, mock_client)
+    mock_request.assert_awaited_once_with(feed=mock_feed, client=mock_client)
+    mock_parse.assert_called_once_with(feed_message=mock_request.return_value, stop=mock_stop)
+
+@patch("app.service.stop_times.StopTimes.parse_arrival")
+def test_parse_feed_message(mock_parse_arrival):
+    mock_stop_time_updates = MagicMock()
+    mock_stop = MagicMock()
+    feed_message = {
+        "entity": [
+            {
+                "no_trip_update": ""
+            },
+            {
+                "tripUpdate": {
+                    "no_stop_time_update": ""
+                }
+            },
+            {
+                "tripUpdate": {
+                    "stopTimeUpdate": mock_stop_time_updates,
+                    "trip": {
+                        "routeId": "A"
+                    }
+                }
+            }
+        ]
+    }
+    stop_times = StopTimes()
+    parsed_message = stop_times.parse_feed_message(feed_message, mock_stop)
+    assert isinstance(parsed_message, list)
+    mock_parse_arrival.assert_called_once_with(mock_stop_time_updates, mock_stop, "A")
+
+
+
+@pytest.mark.asyncio
 @patch("app.service.stop_times.MessageToDict")
 async def test_request_feed_success(mock_message_to_dict):
     # Mock httpx.AsyncClient.get

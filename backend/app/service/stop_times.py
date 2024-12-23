@@ -24,7 +24,7 @@ class StopTimes:
         return self.parse_feed_message(feed_message=feed_message, stop=stop)
 
     @staticmethod
-    async def request_feed(feed: Feed, client: httpx.AsyncClient) -> List[Dict]:
+    async def request_feed(feed: Feed, client: httpx.AsyncClient) -> Dict:
         """make request to API for feed data and return entities"""
         try:
             resp = await client.get(feed.endpoint_url)
@@ -38,7 +38,7 @@ class StopTimes:
         feed_message.ParseFromString(resp.content)
         return MessageToDict(feed_message)
 
-    def parse_feed_message(self, feed_message: List[Dict], stop: Stop) -> List[Arrival]:
+    def parse_feed_message(self, feed_message: Dict, stop: Stop) -> List[Arrival]:
         arrivals = []
         for entity in feed_message["entity"]:
             # only parse if there are stop times
