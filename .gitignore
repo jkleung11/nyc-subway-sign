@@ -5,6 +5,7 @@ frontend/dist/
 
 # python stuff
 .DS_Store
+.coverage
 
 # scratch files
 scratch.py
