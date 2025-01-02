@@ -1,0 +1,37 @@
+name: Run Tests on Pull Requests
+
+on:
+  pull_request:
+    branches:
+      - main  # Or any branch you'd like to target for pull requests
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.21
+        options: >-
+          --privileged
+        ports:
+          - 8000:8000  
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install docker-compose-plugin -y
+
+    - name: Build and Run Tests
+      run: |
+        docker-compose build backend-tests
+        docker-compose run backend-tests
