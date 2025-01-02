@@ -29,7 +29,6 @@ jobs:
     - name: Install Docker Compose
       run: |
         sudo apt-get update
-        sudo apt-get install docker-compose-plugin -y
 
     - name: Build and Run Tests
       run: |
