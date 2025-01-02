@@ -23,7 +23,7 @@ services:
       - 3000:3000
     environment:
       - SUBWAY_API_URL=http://backend:8000
-      - GTFS_STOP_ID=A15
+      - GTFS_STOP_ID=A45
       - MIN_MINS=5
       - MAX_MINS=15
     depends_on:
@@ -31,3 +31,10 @@ services:
         condition: service_healthy
     privileged: true
     restart: "on-failure"
+  backend-tests:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.tests
+    volumes:
+      - ./backend:/backend  # Mount the backend directory directly
+    command: bash -c "poetry run coverage run -m pytest && poetry run coverage report --show-missing"

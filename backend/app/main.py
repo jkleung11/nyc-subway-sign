@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
     app.client = httpx.AsyncClient()
     app.subway_system = SubwaySystem(stations_path="subway-stations.csv")
     app.stop_times = StopTimes()
-    app.feeds = Feeds(ENDPOINT_ROUTE_DICT)
+    app.feeds = Feeds()
     yield
     await app.client.aclose()
 
