@@ -52,6 +52,5 @@ After setting these to your preferences, build and run the containers on your Ra
 *A note: You may need to use `sudo` before calling `docker`*
 
 ```
-sudo docker compose build # build the images
-sudo docker compose up # start the containers
+sudo docker compose up backend frontend # start the containers for the app (not tests)
 ```
