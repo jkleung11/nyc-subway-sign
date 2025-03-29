@@ -27,6 +27,7 @@ ENDPOINT_ROUTE_DICT = {
         "5",
         "6",
         "7",
+        "S"
     ],
 }
 
