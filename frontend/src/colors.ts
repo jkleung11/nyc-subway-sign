@@ -15,7 +15,7 @@ const TrainColors: Record<Colors, string[]> = {
   [Colors.Orange]: ["B", "D", "F", "M"],
   [Colors.LightGreen]: ["G"],
   [Colors.Brown]: ["J", "Z"],
-  [Colors.Gray]: ["L"],
+  [Colors.Gray]: ["L", "S"],
   [Colors.Yellow]: ["N", "Q", "R", "W"],
   [Colors.Red]: ["1", "2", "3"],
   [Colors.DarkGreen]: ["4", "5", "6"],

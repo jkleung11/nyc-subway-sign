@@ -54,3 +54,4 @@ After setting these to your preferences, build and run the containers on your Ra
 ```
 sudo docker compose up backend frontend # start the containers for the app (not tests)
 ```
+test
