@@ -1,6 +1,6 @@
 
-import { drawTrainLogo, displayMessage, displayStopName } from './utils';
-import { font, matrix } from './matrix';
+import { drawTrainLogo, displayMessage, displayStopName } from './display/utils';
+import { font, matrix } from './display/matrix';
 
 // Function to loop through the list of messages
 async function drawDisplay() {

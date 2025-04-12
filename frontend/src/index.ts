@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { setTimeout } from 'timers/promises';
-import { displayMessage, drawTrainLogo, displayStopName, processStopLabel } from './utils';
-import { matrix, font } from './matrix';
+import { displayMessage, drawTrainLogo, displayStopName, processStopLabel } from './display/utils';
+import { matrix, font } from './display/matrix';
 
 // Backend API URL (make sure it points to the correct backend URL)
 const backendUrl = process.env.SUBWAY_API_URL || 'http://localhost:8000';
