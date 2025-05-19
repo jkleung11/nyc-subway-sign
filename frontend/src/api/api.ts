@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // interfaces for responses
-interface Arrival {
+export interface Arrival {
     route_id: string;
     direction_label: string;
     direction_letter: string;
