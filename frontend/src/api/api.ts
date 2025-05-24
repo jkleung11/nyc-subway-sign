@@ -8,8 +8,13 @@ export interface Arrival {
     arrival_mins: number;
 }
 
-interface BackendResponse {
+interface rawBackendResponse {
     stop_name: string;
+    arrivals: Arrival[];
+}
+
+interface BackendResponse {
+    stopName: string;
     arrivals: Arrival[];
 }
 
@@ -19,13 +24,17 @@ interface ApiErrorResponse {
 
 export async function fetchArrivals(backendUrl: string, stopId: string, minMins: number, maxMins: number): Promise<BackendResponse | ApiErrorResponse> {
     try {
-        const response = await axios.post<BackendResponse>(`${backendUrl}/times`, {
+        const response = await axios.post<rawBackendResponse>(`${backendUrl}/times`, {
             gtfs_stop_id: stopId,
             min_mins: minMins,
             max_mins: maxMins
         });
         console.log(response.status);
-        return response.data;
+        const timesData = response.data;
+        return {
+            stopName: timesData.stop_name,
+            arrivals: timesData.arrivals
+        }
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error("Axios error details:", error.response?.data);
