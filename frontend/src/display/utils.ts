@@ -26,10 +26,9 @@ export enum DisplayErrorType {
 }
 
 
-function drawTrainLogo(matrix: LedMatrixInstance, x: number, y: number,
+export function drawTrainLogo(matrix: LedMatrixInstance, x: number, y: number,
   width: number, train: string): void {
   const color = getTrainColor(train);
-  matrix.fgColor(color)
   matrix.fgColor(color);
   matrix.drawLine(x + 2, y + 0, x + width + 0, y + 0);
   matrix.drawLine(x + 1, y + 1, x + width + 1, y + 1);
@@ -64,8 +63,6 @@ export function processStopLabel(stopLabel: string, directionLetter: string): st
 
   return stopLabel;
 }
-
-
 
 // Function to display a message on the LED matrix
 function displayMessage(matrix: LedMatrixInstance,
