@@ -51,20 +51,21 @@ function drawTrainLogo(matrix: LedMatrixInstance, x: number, y: number,
  * @param directionLetter N or S
  * @returns string
  */
-function processStopLabel(stopLabel: string, directionLetter: string): string {
+export function processStopLabel(stopLabel: string, directionLetter: string): string {
   // sometimes a stop label is too long for our display
   // if we're too long, default to Uptown / Downtown 
-  if (stopLabel.length > 11) {
-    if (directionLetter === "N") {
-      return "Uptown";
-    } else if (directionLetter === "S") {
-      return "Downtown";
-    } else {
-      throw new Error("Invalid direction letter");
-    }
+  if (directionLetter !== "N" && directionLetter !== "S") {
+    throw new Error("Invalid direction letter");
   }
+
+  if (stopLabel.length > 11) {
+    return directionLetter === "N" ? "Uptown" : "Downtown";
+  }
+
   return stopLabel;
 }
+
+
 
 // Function to display a message on the LED matrix
 function displayMessage(matrix: LedMatrixInstance,
