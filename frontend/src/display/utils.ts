@@ -65,14 +65,17 @@ export function processStopLabel(stopLabel: string, directionLetter: string): st
 }
 
 // Function to display a message on the LED matrix
-function displayMessage(matrix: LedMatrixInstance,
-  x: number, y: number, message: string, color: number = 0x00FF00) {
-  matrix.fgColor(color);
-  matrix.drawText(message, x, y);
+function displayMessage(
+  matrix: LedMatrixInstance,
+  x: number, 
+  y: number, 
+  message: string, 
+  color: number = 0x00FF00) {
+    matrix.fgColor(color);
+    matrix.drawText(message, x, y);
 }
 
-function displayStopName(matrix: LedMatrixInstance, font: FontInstance,
-  stopName: string, y: number = 26) {
+function displayStopName(matrix: LedMatrixInstance, font: FontInstance, stopName: string, y: number = 26) {
   const nameWidth = font.stringWidth(stopName);
   const centered = Math.floor((matrix.width() - nameWidth) / 2);
   displayMessage(matrix, centered, y, stopName);
@@ -130,9 +133,9 @@ export function displayError(
   errorType: DisplayErrorType,
   x: number = 1,
   y: number = 2) {
-    
-    matrix.clear();
-    displayMessage(matrix, x, y, errorType)
-    matrix.sync();
+
+  matrix.clear();
+  displayMessage(matrix, x, y, errorType)
+  matrix.sync();
 
 } 
