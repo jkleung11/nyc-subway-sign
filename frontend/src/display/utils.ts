@@ -131,11 +131,15 @@ export function displayArrivals(
 export function displayError(
   matrix: LedMatrixInstance,
   errorType: DisplayErrorType,
+  stopName?: string,
   x: number = 1,
   y: number = 2) {
 
   matrix.clear();
   displayMessage(matrix, x, y, errorType)
+  if (errorType === DisplayErrorType.NoTrains && stopName) {
+    displayStopName(matrix, font, stopName);
+  }
   matrix.sync();
 
 } 

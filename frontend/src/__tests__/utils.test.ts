@@ -68,6 +68,15 @@ describe('displayError', () => {
         expect(matrix.drawText).toHaveBeenCalledWith("api error", 1, 2);
         expect(matrix.sync).toHaveBeenCalledTimes(1);
     })
+
+    it('also displays stop name for no trains', () => {
+        utils.displayError(matrix, utils.DisplayErrorType.NoTrains, "MyStop");
+        expect(matrix.clear).toHaveBeenCalledTimes(1);
+        expect(matrix.drawText).toHaveBeenCalledWith("no trains", 1, 2);
+        expect(matrix.drawText).toHaveBeenLastCalledWith("MyStop", 32, 26);
+        expect(matrix.sync).toHaveBeenCalledTimes(1);
+
+    })
 });
 
 describe('displayArrivals', () => {

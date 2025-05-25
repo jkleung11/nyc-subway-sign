@@ -20,18 +20,14 @@ async function fetchAndDisplayStop(stopId: string) {
   const timesData = await fetchArrivals(backendUrl, stopId, minMins, maxMins);
   // early exit
   if ("error" in timesData) {
-    matrix.clear();
     displayError(matrix, DisplayErrorType.ApiError);
-    matrix.sync();
     return;
   }
 
   const { stopName, arrivals } = timesData;
 
   if (arrivals.length === 0) {
-    matrix.clear();
-    displayError(matrix, DisplayErrorType.NoTrains);
-    matrix.sync();
+    displayError(matrix, DisplayErrorType.NoTrains, stopName);
     return;
   }
 
