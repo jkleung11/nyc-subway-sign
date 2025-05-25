@@ -1,7 +1,7 @@
 import { fetchArrivals } from './api/api';
 import { setTimeout } from 'timers/promises';
 import { displayArrivals, displayError, DisplayErrorType } from './display/utils';
-import { matrix, font } from './display/matrix';
+import { matrix } from './display/matrix';
 
 // Backend API URL (make sure it points to the correct backend URL)
 const backendUrl = process.env.SUBWAY_API_URL || 'http://localhost:8000';
