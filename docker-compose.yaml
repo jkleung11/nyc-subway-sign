@@ -23,9 +23,9 @@ services:
       - 3000:3000
     environment:
       - SUBWAY_API_URL=http://backend:8000
-      - GTFS_STOP_IDS=A45,S01
+      - GTFS_STOP_IDS=A45,A46
       - MIN_MINS=5
-      - MAX_MINS=15
+      - MAX_MINS=20
     depends_on:
       backend:
         condition: service_healthy
