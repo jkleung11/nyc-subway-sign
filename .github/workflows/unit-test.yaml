@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
       - main  # Or any branch you'd like to target for pull requests
+      - feat--multiple-stops
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     services:
       docker:
         image: docker:20.10.21
@@ -30,7 +30,19 @@ jobs:
       run: |
         sudo apt-get update
 
-    - name: Build and Run Tests
+    - name: Build and Run Backend Tests
       run: |
         docker compose build backend-tests
-        docker compose run backend-tests
+        docker compose run --rm backend-tests
+    
+    - name: Set up Node.js (for npm caching)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Build and Run Frontend Tests
+        run: |
+          docker compose build frontend-tests
+          docker compose run --rm frontend-tests
+

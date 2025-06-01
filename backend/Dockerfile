@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-slim AS base
 
 # Install dependencies for installing pipx and Poetry
 RUN apt-get update && apt-get install -y \
@@ -20,9 +20,15 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock* /app/
 
-# Install dependencies using Poetry
-RUN poetry install --no-root
-
+# Stage for tests
+FROM base AS test
+RUN poetry install --with dev
 COPY . /app
+CMD ["poetry", "run", "pytest"]
 
+
+# Stage for backend
+FROM base AS backend
+RUN poetry install --no-root
+COPY . /app
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
