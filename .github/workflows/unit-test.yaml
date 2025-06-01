@@ -26,10 +26,6 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install Docker Compose
-      run: |
-        sudo apt-get update
-
     - name: Build and Run Backend Tests
       run: |
         docker compose build backend-tests

@@ -48,3 +48,5 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: test
+    volumes:
+      - ./frontend:/frontend
