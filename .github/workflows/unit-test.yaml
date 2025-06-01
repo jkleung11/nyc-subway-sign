@@ -36,13 +36,13 @@ jobs:
         docker compose run --rm backend-tests
     
     - name: Set up Node.js (for npm caching)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.x'
-          cache: 'npm'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22.x'
+        cache: 'npm'
 
-      - name: Build and Run Frontend Tests
-        run: |
-          docker compose build frontend-tests
-          docker compose run --rm frontend-tests
+    - name: Build and Run Frontend Tests
+      run: |
+        docker compose build frontend-tests
+        docker compose run --rm frontend-tests
 
