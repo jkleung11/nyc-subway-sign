@@ -3,8 +3,7 @@ name: Run Tests on Pull Requests
 on:
   pull_request:
     branches:
-      - main  # Or any branch you'd like to target for pull requests
-      - feat--multiple-stops
+      - main
 
 jobs:
   tests:
