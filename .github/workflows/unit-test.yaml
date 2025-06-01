@@ -21,22 +21,10 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-
     - name: Build and Run Backend Tests
       run: |
         docker compose build backend-tests
         docker compose run --rm backend-tests
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22.x'
-        cache: 'npm'
-      working-directory: ./frontend
 
     - name: Build and Run Frontend Tests
       run: |
