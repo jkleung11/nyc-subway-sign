@@ -43,9 +43,10 @@ After initial set up for your Raspberry Pi, you will need to install Docker. Ins
 
 Both the frontend and backend of the sign run on Docker containers. The `docker-compose` file sets environment variables that control:
 
-- The specific station to get times for via `GTFS_STOP_ID`
-- Minimum time to arrival in minutes via `MIN_MINS`
-- Maximum time to arrival in minutes via `MAX_MINS`
+- The specific stations to get times for via `GTFS_STOP_IDS`
+  - This is a comma delimited string of stop ids, which are iterated through serially
+- Minimum time to arrival in minutes via `MIN_MINS`, applied for all stops
+- Maximum time to arrival in minutes via `MAX_MINS`, applied for all stops
 
 After setting these to your preferences, build and run the containers on your Raspberry Pi. After the backend application is healthy, the frontend begins making requests to fetch times from the MTA API. Check the `subway-stations.csv` file to find your station's `GTFS_STOP_ID`.
 

@@ -1,4 +1,4 @@
-enum Colors {
+export enum Colors {
   Blue = 0x0039A6,
   Orange = 0xFF6319,
   LightGreen = 0x6CBE45,

@@ -1,8 +1,9 @@
 services:
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
+      target: backend
     volumes:
       - ./backend:/app
     ports: 
@@ -13,28 +14,39 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+  
+  backend-tests:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: test
+    volumes:
+      - ./backend:/backend
+  
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      target: frontend
     volumes:
       - ./frontend:/app/src
     ports:
       - 3000:3000
     environment:
       - SUBWAY_API_URL=http://backend:8000
-      - GTFS_STOP_ID=A45
+      - GTFS_STOP_IDS=A45,A46,G33
       - MIN_MINS=5
-      - MAX_MINS=15
+      - MAX_MINS=20
     depends_on:
       backend:
         condition: service_healthy
     privileged: true
     restart: "on-failure"
-  backend-tests:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile.tests
+  
+  frontend-tests:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: test
     volumes:
-      - ./backend:/backend  # Mount the backend directory directly
-    command: bash -c "poetry run coverage run -m pytest && poetry run coverage report --show-missing"
+      - ./frontend:/frontend
